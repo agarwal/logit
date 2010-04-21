@@ -33,36 +33,8 @@ let usage = sprintf
 
 Moves file (or directory) to out_dir after prepending its
 name with the today's date. See options to customize
-behavior.
-
-Examples:
-
-Move your notes from today to your log directory:
-
-  %s -d ~/log notes.txt
-
-If today's date is April 20, 2010, this would be equivalent
-to:
-
-  mv notes.txt ~/log/2010-04-20\\ notes.txt
-
-If these notes were from yesterday, but you forgot to run the
-command until getting back to work this morning, you could do:
-
-  %s -d ~/log -p 2010-04-19 notes.txt
-
-It is recommended to use your shell's facilities to specify
-a default log directory. For example, in the bash shell, you
-can do:
-
-  alias %s=\'%s -d ~/log'
-
-Then, the first example above becomes simply:
-
-  %s notes.txt
-
-You can override the default by still using the -d option
-since only the last takes effect.
+behavior. See README file for examples at the project's
+website: http://github.com/agarwal/logit.
 
 Options:
   -d out_dir
