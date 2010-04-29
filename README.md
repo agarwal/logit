@@ -1,4 +1,4 @@
-logit.ml - OCaml script to date stamp files and move them to a log directory  
+logit.ml - OCaml script to date-stamp files and move them to a log directory  
 Project Website: <http://github.com/agarwal/logit>
 
 INSTALLATION

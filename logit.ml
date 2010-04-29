@@ -32,7 +32,7 @@ let usage = sprintf
   %s -d out_dir file
 
 Moves file (or directory) to out_dir after prepending its
-name with the today's date. See options to customize
+name with the today's date. See options below to customize
 behavior. See README file for examples at the project's
 website: http://github.com/agarwal/logit.
 
@@ -56,7 +56,7 @@ Options:
   -h
   --help
    Print this help message."
-  prog prog prog (Filename.chop_extension prog) prog (Filename.chop_extension prog)
+  prog
 
 type params = {
   in_file : string; (* full path *)
