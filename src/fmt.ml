@@ -16,48 +16,19 @@ type spec =
     | DefaultNumSpec of num_spec
     | ExactNumSpec of int * num_spec
     | DeltaNumSpec of pm * int * num_spec
-
-(** Types of [spec]s. *)
-type spec_type =
-    | CharType
-    | StringType
-    | YearType
-    | MonthType
-    | DayType
-    | HourType
-    | MinuteType
-    | SecondType
         
 (** A format string is an ordered list of format specifiers. *)
 type t = spec list
-
-let type_of_spec (spec:spec) : spec_type = 
-  match spec with
-    | CharSpec _ -> CharType
-    | StringSpec -> StringType
-    | DefaultNumSpec nfield 
-    | ExactNumSpec (_,nfield) 
-    | DeltaNumSpec (_,_,nfield) ->
-        match nfield with
-          | YearSpec -> YearType
-          | MonthSpec -> MonthType
-          | DaySpec -> DayType
-          | HourSpec -> HourType
-          | MinuteSpec -> MinuteType
-          | SecondSpec -> SecondType
-              
-(** True if given [spec_type] represents numeric format specifiers. *)
-let is_num_type (x:spec_type) : bool =
+    
+(** True if given [spec] represents a numeric format specifiers. *)
+let is_num_spec (x:spec) : bool =
   match x with
-    | YearType
-    | MonthType
-    | DayType
-    | HourType
-    | MinuteType
-    | SecondType -> true
-    | CharType
-    | StringType -> false
-        
+    | CharSpec _
+    | StringSpec -> false
+    | DefaultNumSpec _
+    | ExactNumSpec _
+    | DeltaNumSpec _ -> true
+
 (** Convert given [char] to its corresponding [num_spec]. *)
 let char_to_num_spec (c:char) : num_spec =
   match c with
