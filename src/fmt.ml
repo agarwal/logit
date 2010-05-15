@@ -1,5 +1,5 @@
-(** Base format strings. Format strings for both scanning and printing
-    use this as their internal representation. *)
+(** Format strings. Used internally to represent both scanning and
+    printing format specifiers. *)
 
 open Printf;; open CalendarLib
 
@@ -19,8 +19,25 @@ type spec =
         
 (** A format string is an ordered list of format specifiers. *)
 type t = spec list
-    
-(** True if given [spec] represents a numeric format specifiers. *)
+        
+(** Types of values associated with format specifiers of each possible
+    type of [spec]. For example:
+    - [CharSpec] has 'Char c' data
+    - [StringSpec] has 'String s' data
+    - [DefaultNumSpec Year] has 'Year n' data
+    - etc.
+*)
+type spec_data =
+    | Char of char
+    | String of string
+    | Year of int
+    | Month of int
+    | Day of int
+    | Hour of int
+    | Minute of int
+    | Second of int
+
+(** True if given [spec] represents a numeric format specifier. *)
 let is_num_spec (x:spec) : bool =
   match x with
     | CharSpec _
@@ -40,14 +57,6 @@ let char_to_num_spec (c:char) : num_spec =
     | 'c' -> SecondSpec
     | _ -> failwith (sprintf "expected y,m,d,h,n, or c but saw %c" c)
         
-(** Return [spec] corresponding to the string "%[x]", that is a
-    percent symbol followed by the character [x]. *)
-let char_to_spec (x:char) : spec =
-  match x with
-    | 's' -> StringSpec
-    | 'y' | 'm' | 'd' | 'h' | 'n' | 'c' -> DefaultNumSpec (char_to_num_spec x)
-    | _ -> failwith (sprintf "expected s,y,m,d,h,n, or c but saw %c" x)
-        
 (** Convert given [num_spec] to its corresponding [char]. *)
 let num_spec_to_char (nfield : num_spec) : char =
   match nfield with
@@ -58,6 +67,14 @@ let num_spec_to_char (nfield : num_spec) : char =
     | MinuteSpec -> 'n'
     | SecondSpec -> 'c'
 
+(** [char_to_spec x] returns [spec] corresponding to the string
+    "%[x]", that is a percent symbol followed by the character [x]. *)
+let char_to_spec (x:char) : spec =
+  match x with
+    | 's' -> StringSpec
+    | 'y' | 'm' | 'd' | 'h' | 'n' | 'c' -> DefaultNumSpec (char_to_num_spec x)
+    | _ -> failwith (sprintf "expected s,y,m,d,h,n, or c but saw %c" x)
+        
 let spec_to_string = function
   | CharSpec c -> sprintf "%c" c
   | StringSpec -> "%s"
@@ -68,16 +85,13 @@ let spec_to_string = function
 
 let to_string (t:t) : string =
   String.concat "" (List.map spec_to_string t)
-    
-(** Types of values associated with format specifiers of each possible
-    [spec_type]. Format specifiers of CharType can have 'Char c' data,
-    those of StringType can have 'String s' data, and so on. *)
-type spec_data =
-    | Char of char
-    | String of string
-    | Year of int
-    | Month of int
-    | Day of int
-    | Hour of int
-    | Minute of int
-    | Second of int
+
+let spec_data_to_string = function
+  | Char x -> sprintf "Char %c" x
+  | String x -> sprintf "String %s" x
+  | Year x -> sprintf "Year %d" x
+  | Month x -> sprintf "Month %d" x
+  | Day x -> sprintf "Day %d" x
+  | Hour x -> sprintf "Hour %d" x
+  | Minute x -> sprintf "Minute %d" x
+  | Second x -> sprintf "Second %d" x
