@@ -9,7 +9,7 @@ type t = private Fmt.t
     scanner. *)
 val make : Fmt.t -> t
 
-(** [parse scanner str] parses [str] using [scanner]. Returns the
+(** [parse_string scanner str] parses [str] using [scanner]. Returns the
     values parsed for each format element. Raise [Failure] if [str] is
     not in format specified by [scanner]. *)
-val parse : t -> string -> Fmt.spec_data list
+val parse_string : t -> string -> Data.t list
