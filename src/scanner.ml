@@ -128,7 +128,9 @@ let specDoesParse (spec:spec) (str:string) : bool =
 let parse_string scanner str =
   let rec loop ans scanner str =
     match scanner with
-      | []  (* same as ending with %s *)
+      | [] ->
+          if String.length str = 0 then ans
+          else failwith (sprintf "%s: saw this beyond expected end-of-input" str)
       | StringSpec::[] -> (Data.String str)::ans
       | (ExactNumSpec _)::_
       | (DeltaNumSpec _)::_
