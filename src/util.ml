@@ -43,3 +43,19 @@ let string_take (n:int) (s:string) : string =
   else
     String.sub s 0 n
   
+(** [find_first pred lst] returns the first element in [lst] to
+    satisfy [pred], if any. *)
+let find_first (pred : 'a -> bool) (lst : 'a list) : 'a option =
+  let ans = ref None in
+  let rec loop = function
+    | [] -> ()
+    | a::lst ->
+        if pred a then
+          (ans := Some a; raise Exit) 
+        else
+          loop lst
+  in
+  try (loop lst; !ans)
+  with Exit -> !ans
+    
+
