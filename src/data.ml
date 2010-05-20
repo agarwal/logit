@@ -1,6 +1,6 @@
 (** Data values associated with format specifiers. *)
 
-open Printf
+open Printf;; open Util
 
 (** Types of values associated with format specifiers of each possible
     type of [spec]. For example:
@@ -19,6 +19,27 @@ type t =
     | Minute of int
     | Second of int
 
+type typ =
+    | CharType
+    | StringType
+    | YearType
+    | MonthType
+    | DayType
+    | HourType
+    | MinuteType
+    | SecondType
+
+let typeOfData (t:t) : typ =
+  match t with
+    | Char _ -> CharType
+    | String _ -> StringType
+    | Year _ -> YearType
+    | Month _ -> MonthType
+    | Day _ -> DayType
+    | Hour _ -> HourType
+    | Minute _ -> MinuteType
+    | Second _ -> SecondType
+
 (** Used only for debugging. *)
 let to_string = function
   | Char x -> sprintf "Char %c" x
@@ -29,3 +50,49 @@ let to_string = function
   | Hour x -> sprintf "Hour %d" x
   | Minute x -> sprintf "Minute %d" x
   | Second x -> sprintf "Second %d" x
+
+(** Returns the current time in the local time zone. *)
+let time_now () : Unix.tm =
+  Unix.localtime (Unix.time())
+
+
+(** {6 Time Accessors} *)
+(** All the following return the first value requested in given data,
+    or the value based on the current time if given data does not contain
+    it. *)
+
+let year (ts : t list) : int =
+  match find_first (fun a -> typeOfData a = YearType) ts with
+    | Some (Year x) -> x
+    | Some _ -> assert false
+    | None -> (time_now()).Unix.tm_year + 1900
+
+let month (ts : t list) : int =
+  match find_first (fun a -> typeOfData a = MonthType) ts with
+    | Some (Month x) -> x
+    | Some _ -> assert false
+    | None -> (time_now()).Unix.tm_mon + 1
+
+let day (ts : t list) : int =
+  match find_first (fun a -> typeOfData a = DayType) ts with
+    | Some (Day x) -> x
+    | Some _ -> assert false
+    | None -> (time_now()).Unix.tm_mday
+
+let hour (ts : t list) : int =
+  match find_first (fun a -> typeOfData a = HourType) ts with
+    | Some (Hour x) -> x
+    | Some _ -> assert false
+    | None -> (time_now()).Unix.tm_hour
+
+let minute (ts : t list) : int =
+  match find_first (fun a -> typeOfData a = MinuteType) ts with
+    | Some (Minute x) -> x
+    | Some _ -> assert false
+    | None -> (time_now()).Unix.tm_min
+
+let second (ts : t list) : int =
+  match find_first (fun a -> typeOfData a = SecondType) ts with
+    | Some (Second x) -> x
+    | Some _ -> assert false
+    | None -> (time_now()).Unix.tm_sec

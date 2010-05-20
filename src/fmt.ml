@@ -1,7 +1,7 @@
 (** Format strings. Used internally to represent both scanning and
     printing format specifiers. *)
 
-open Printf;; open CalendarLib
+open Printf
 
 (** Types of numeric format specifiers. *)
 type num_spec = YearSpec | MonthSpec | DaySpec | HourSpec | MinuteSpec | SecondSpec
