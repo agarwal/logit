@@ -4,9 +4,13 @@ open Printf;; open Util
 
 (** Types of values associated with format specifiers of each possible
     type of [spec]. For example:
-    - [CharSpec] has 'Char c' data
-    - [StringSpec] has 'String s' data
-    - [DefaultNumSpec Year] has 'Year n' data
+    - [CharSpec c] has 'Char c' data. This is a trivial case since the
+    only data parseable by the [CharSpec c] format specifier is the
+    character [c].
+    - [StringSpec] has 'String s' data, where [s] is the specific
+    string that was parsed.
+    - [DefaultNumSpec Year] has 'Year n' data, where [n] is the
+    specific year that was parsed.
     - etc.
 *)
 type t =
@@ -96,3 +100,18 @@ let second (ts : t list) : int =
     | Some (Second x) -> x
     | Some _ -> assert false
     | None -> (time_now()).Unix.tm_sec
+
+
+(** {6 Char and String Accessors} *)
+
+let char (ts : t list) : char =
+  match find_first (fun a -> typeOfData a = CharType) ts with
+    | Some (Char x) -> x
+    | Some _ -> assert false
+    | None -> failwith "Char data not found"
+
+let string (ts : t list) : string =
+  match find_first (fun a -> typeOfData a = StringType) ts with
+    | Some (String x) -> x
+    | Some _ -> assert false
+    | None -> failwith "String data not found"
