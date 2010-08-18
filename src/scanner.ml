@@ -34,23 +34,6 @@ let to_string t : string =
 
 (*
 
-(* Should be able to get rid of this since new parser should already
-  create well-formed scanner directly. *)
-let make fmt =
-  let rec validate fmt : unit =
-    match fmt with
-      | [] -> ()
-      | StringSpec::StringSpec::_ ->
-          failwith "multiple consecutive %s format specifiers not allowed"
-      | (CharSpec _)::fmt
-      | StringSpec::fmt
-      | (DefaultNumSpec _)::fmt -> validate fmt
-      | (ExactNumSpec _ as spec)::_
-      | (DeltaNumSpec _ as spec)::_ ->
-          failwith (sprintf "%s: invalid scanner" (spec_to_string spec))
-  in
-  validate fmt; fmt
-
   type parse_result =
   | Success of Data.t * string (* result of parsing one spec and remaining string *)
     | NoParse of string (* error message explaining failure *)

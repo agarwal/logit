@@ -60,18 +60,6 @@ let to_string (t:t) : string =
   String.concat "" (List.map spec_to_string t)
 
 (*
-  val of_string : string -> t
-(** Parse given format string. Raise [Failure] if given string is not
-  a valid printer. *)
-
-(** True if given [spec] represents a numeric format specifier. *)
-let is_num_spec (x:spec) : bool =
-  match x with
-    | CharSpec _
-    | StringSpec _ -> false
-    | NumSpec _ -> true
-
-let make fmt = fmt
 
 (** [print_string t data] returns a string formatted according to
   printer [t] and using given [data]. *)
