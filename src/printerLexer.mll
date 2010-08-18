@@ -1,5 +1,5 @@
 {
-open FmtParser
+open PrinterParser
 let num_chars = ref 0
 }
 
