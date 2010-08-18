@@ -32,13 +32,11 @@ let to_string t : string =
   String.concat "" (List.map spec_to_string t)
     
 
-(*
-
-  type parse_result =
-  | Success of Data.t * string (* result of parsing one spec and remaining string *)
+type parse_result =
+    | Success of Data.datum * string (* result of parsing one spec and remaining string *)
     | NoParse of string (* error message explaining failure *)
 
-(* Parse string according to given format specifier, which must not be
+(* Parse string according to given scanner specifier, which must not be
    StringSpec. *)
 let parseAnySpecExceptString (spec:spec) (str:string) : parse_result =
   match spec with
@@ -49,7 +47,7 @@ let parseAnySpecExceptString (spec:spec) (str:string) : parse_result =
           NoParse (sprintf "expected %c but saw %c" c str.[0])
         else
           Success (Data.Char c, string_drop 1 str)
-    | DefaultNumSpec YearSpec -> (
+    | YearSpec -> (
         let n = String.length str in
         if n < 4 then
           NoParse "expected 4 digit year but reached end-of-input"
@@ -60,7 +58,7 @@ let parseAnySpecExceptString (spec:spec) (str:string) : parse_result =
           with
               Failure _ -> NoParse (sprintf "%s: invalid year" str)
       )
-    | DefaultNumSpec MonthSpec -> (
+    | MonthSpec -> (
         let n = String.length str in
         if n < 2 then
           NoParse "expected 2 digit month but reached end-of-input"
@@ -74,7 +72,7 @@ let parseAnySpecExceptString (spec:spec) (str:string) : parse_result =
           with
               Failure _ -> NoParse (sprintf "%s: invalid month" str)
       )
-    | DefaultNumSpec DaySpec -> (
+    | DaySpec -> (
         let n = String.length str in
         if n < 2 then
           NoParse "expected 2 digit day but reached end-of-input"
@@ -88,7 +86,7 @@ let parseAnySpecExceptString (spec:spec) (str:string) : parse_result =
           with
               Failure _ -> NoParse (sprintf "%s: invalid day" str)
       )
-    | DefaultNumSpec HourSpec -> (
+    | HourSpec -> (
         let n = String.length str in
         if n < 2 then
           NoParse "expected 2 digit hour but reached end-of-input"
@@ -102,7 +100,7 @@ let parseAnySpecExceptString (spec:spec) (str:string) : parse_result =
           with
               Failure _ -> NoParse (sprintf "%s: invalid hour" str)
       )
-    | DefaultNumSpec MinuteSpec -> (
+    | MinuteSpec -> (
         let n = String.length str in
         if n < 2 then
           NoParse "expected 2 digit minute but reached end-of-input"
@@ -116,7 +114,7 @@ let parseAnySpecExceptString (spec:spec) (str:string) : parse_result =
           with
               Failure _ -> NoParse (sprintf "%s: invalid minute" str)
       )
-    | DefaultNumSpec SecondSpec -> (
+    | SecondSpec -> (
         let n = String.length str in
         if n < 2 then
           NoParse "expected 2 digit seconds but reached end-of-input"
@@ -130,32 +128,33 @@ let parseAnySpecExceptString (spec:spec) (str:string) : parse_result =
           with
               Failure _ -> NoParse (sprintf "%s: invalid seconds" str)
       )
-    | ExactNumSpec _
-    | DeltaNumSpec _
     | StringSpec _ -> assert false
 
-(* Return true if [spec], which must not be StringSpec, can
-   successfully parse beginning of given string. *)
+(** Return true if [spec], which must not be StringSpec, can
+    successfully parse beginning of given string. *)
 let specDoesParse (spec:spec) (str:string) : bool =
   match parseAnySpecExceptString spec str with
     | NoParse _ -> false
     | Success _ -> true
 
-(** [parse_string scanner str] parses [str] using [scanner]. Returns the
-    values parsed for each format element. Raise [Failure] if [str] is
-    not in format specified by [scanner]. *)
-let parse_string scanner str =
+(** [parse_string scanner str] parses [str] using [scanner]. Returns
+    the values parsed for each format element. Raise [Failure] if
+    [str] is not in format specified by [scanner]. *)
+let parse_string scanner str : Data.t =
   let rec loop ans scanner str =
     match scanner with
       | [] ->
           if String.length str = 0 then ans
           else failwith (sprintf "%s: saw this beyond expected end-of-input" str)
       | StringSpec::[] -> (Data.String str)::ans
-      | (ExactNumSpec _)::_
-      | (DeltaNumSpec _)::_
       | StringSpec::StringSpec::_ -> assert false
       | (CharSpec _ as spec)::scanner
-      | (DefaultNumSpec _ as spec)::scanner -> (
+      | (YearSpec as spec)::scanner
+      | (MonthSpec as spec)::scanner
+      | (DaySpec as spec)::scanner
+      | (HourSpec as spec)::scanner
+      | (MinuteSpec as spec)::scanner
+      | (SecondSpec as spec)::scanner -> (
           match parseAnySpecExceptString spec str with
             | NoParse msg -> failwith msg
             | Success (dat,str) ->
@@ -175,5 +174,3 @@ let parse_string scanner str =
           loop ((Data.String chars)::ans) scanner str
   in
   List.rev (loop [] scanner str)
-
-*)
