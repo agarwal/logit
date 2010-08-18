@@ -1,8 +1,41 @@
-open Printf;; open Util;; open Fmt
+(** A scanner specifies how to parse an input file name. *)
 
-type t_to_break_recursion = t
-type t = t_to_break_recursion
+open Printf;; open Util
+
+(** Each format specifier represents how to scan (i.e. parse) a specific
+    type of value. *)
+type spec =
+    | CharSpec of char
+    | StringSpec
+    | YearSpec
+    | MonthSpec
+    | DaySpec 
+    | HourSpec
+    | MinuteSpec
+    | SecondSpec
+
+(** A scanner is an ordered list of scanner specifiers. Multiple %s
+    specifiers cannot occur consecutively. *)
+type t = spec list
+
+let to_string t : string =
+  let spec_to_string = function
+    | CharSpec x -> sprintf "%c" x
+    | StringSpec -> "%s"
+    | YearSpec -> "%y"
+    | MonthSpec -> "%m"
+    | DaySpec -> "%d"
+    | HourSpec -> "%h"
+    | MinuteSpec -> "n"
+    | SecondSpec -> "c"
+  in
+  String.concat "" (List.map spec_to_string t)
     
+
+(*
+
+(* Should be able to get rid of this since new parser should already
+  create well-formed scanner directly. *)
 let make fmt =
   let rec validate fmt : unit =
     match fmt with
@@ -18,8 +51,8 @@ let make fmt =
   in
   validate fmt; fmt
 
-type parse_result =
-    | Success of Data.t * string (* result of parsing one spec and remaining string *)
+  type parse_result =
+  | Success of Data.t * string (* result of parsing one spec and remaining string *)
     | NoParse of string (* error message explaining failure *)
 
 (* Parse string according to given format specifier, which must not be
@@ -125,6 +158,9 @@ let specDoesParse (spec:spec) (str:string) : bool =
     | NoParse _ -> false
     | Success _ -> true
 
+(** [parse_string scanner str] parses [str] using [scanner]. Returns the
+    values parsed for each format element. Raise [Failure] if [str] is
+    not in format specified by [scanner]. *)
 let parse_string scanner str =
   let rec loop ans scanner str =
     match scanner with
@@ -156,3 +192,5 @@ let parse_string scanner str =
           loop ((Data.String chars)::ans) scanner str
   in
   List.rev (loop [] scanner str)
+
+*)
