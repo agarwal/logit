@@ -32,6 +32,10 @@ Options:
    The directory into which the file will be moved. Default
    is to rename in current directory.
 
+  --dry-run
+   Don't actually do anything. Just print out what would be
+   done.
+
   -h
   --help
    Print this help message.
@@ -56,6 +60,7 @@ type params = {
   printer : Printer.t;
   in_files : string list; (* full paths *)
   out_dir : string; (* possibly empty string *)
+  dry_run : bool;
 }
 
 type options = {
@@ -63,6 +68,7 @@ type options = {
   mutable option_o : string option;
   mutable option_d : string option;
   mutable option_in_files : string list;
+  mutable option_dry_run : bool;
   mutable option_help : bool
 }
 
@@ -124,15 +130,17 @@ let options_to_params (t:options) : params =
     printer = printer;
     in_files = in_files;
     out_dir = out_dir;
+    dry_run = t.option_dry_run;
   }
 
 let parse_cmdline() : params =
-  let t = {option_i=None; option_o=None; option_d=None; option_in_files=[]; option_help=false} in
+  let t = {option_i=None; option_o=None; option_d=None; option_in_files=[]; option_dry_run=false; option_help=false} in
 
   let opts = [
     'i', "", None, Some (fun x -> t.option_i <- Some x);
     'o', "", None, Some (fun x -> t.option_o <- Some x);
     'd', "", None, Some (fun x -> t.option_d <- Some x);
+    Getopt.noshort, "dry-run", Some (fun () -> t.option_dry_run <- true), None;
     'h', "help", Some (fun () -> t.option_help <- true), None;
   ]
   in
@@ -162,7 +170,8 @@ try
       let out_file = Filename.concat p.out_dir (out_file ^ ext) in
       let cmd = sprintf "mv %s %s" (escape_spaces in_file) (escape_spaces out_file) in
       printf "%s\n" cmd;
-      ignore (Sys.command cmd)
+      if not p.dry_run then
+        ignore (Sys.command cmd)
     with
         Failure msg -> eprintf "%s: %s\n" in_file msg
   in
