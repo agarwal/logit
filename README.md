@@ -15,12 +15,12 @@ them if you have OCaml. If you don't, installing OCaml is also trivial.
 
 Build the code by running
 
-  make all
+    make all
 
 Install it by first setting the INSTALL_DIR variable in the Makefile
 to the directory you would like to install to. Then run
 
-  make install
+    make install
 
 
 USAGE
@@ -81,6 +81,7 @@ reference below.
 DETAILED REFERENCE
 ==================
 A scanner is a list of one or more scanner fields:
+
 * a lone character - parses exactly that character
 * %s - parses a string up until any subsequent scanner field succeeds
 * %y - parses a 4 digit year
@@ -100,6 +101,7 @@ each other. Only single instances of the date and time fields are
 allowed.
 
 A printer is a list of one or more printer fields:
+
 * a lone character - prints exactly that character
 * %[n]s - a percent, an optional integer, and then an s. If no integer
    is given, it defaults to 1. It prints the `n`th string extracted by
