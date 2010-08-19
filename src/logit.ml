@@ -153,16 +153,21 @@ try
   let p = parse_cmdline() in
 
   let run in_file =
-    let in_file = escape_spaces in_file in
-    let data = Scanner.parse_string p.scanner in_file in
-
-    let out_file = Printer.print_string p.printer data in
-    let out_file = escape_spaces (Filename.concat p.out_dir out_file) in
-    let cmd = sprintf "mv %s %s" in_file out_file in
-    printf "%s\n" cmd;
-(*     ignore (Sys.command cmd) *)
+    try
+      let basename = Filename.basename in_file in
+      let base,ext = Util.base_ext basename in
+      let data = Scanner.parse_string p.scanner base in
+      
+      let out_file = Printer.print_string p.printer data in
+      let out_file = Filename.concat p.out_dir (out_file ^ ext) in
+      let cmd = sprintf "mv %s %s" (escape_spaces in_file) (escape_spaces out_file) in
+      printf "%s\n" cmd;
+      ignore (Sys.command cmd)
+    with
+        Failure msg -> eprintf "%s: %s\n" in_file msg
   in
-
+  
   List.iter run p.in_files  
+
 with
-    Failure msg | Getopt.Error msg -> eprintf "%s\n" msg
+    Getopt.Error msg -> eprintf "%s\n" msg

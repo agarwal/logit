@@ -2,8 +2,9 @@
 
 open Printf
 
-(** Represents index into an array of values. First item is numbered 1
-    so value must be >= 1. *)
+(** An index n >= 1 implies that the nth value extracted from the
+    input file name should be used. A value of 0 (or negative) implies
+    that a 'default' value should be used. *)
 type index = int
 
 (** Operators on numeric values. *)
@@ -74,15 +75,16 @@ let print_string (printer : t) (data : Data.t) : string =
       | (CharSpec c)::printer -> loop (sprintf "%s%c" ans c) printer
       | (StringSpec n)::printer -> loop (sprintf "%s%s" ans (Data.string n data)) printer
       | (NumSpec (f,x))::printer ->
-          let g = match x with
-            | YearSpec -> Data.year
-            | MonthSpec -> Data.month
-            | DaySpec -> Data.day
-            | HourSpec -> Data.hour
-            | MinuteSpec -> Data.minute
-            | SecondSpec -> Data.second
+          let g, size = match x with
+            | YearSpec -> Data.year, 4
+            | MonthSpec -> Data.month, 2
+            | DaySpec -> Data.day, 2
+            | HourSpec -> Data.hour, 2
+            | MinuteSpec -> Data.minute, 2
+            | SecondSpec -> Data.second, 2
           in
           let y = apply_num_modifier f (g data) in
-          loop (sprintf "%s%d" ans y) printer
+          let y = Util.prepad size '0' (string_of_int y) in
+          loop (sprintf "%s%s" ans y) printer
   in
   loop "" printer

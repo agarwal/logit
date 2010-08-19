@@ -43,7 +43,7 @@ elem:
     ]
   }
 | PERCENT INTEGER CHAR {
-    [if $2 >= 1  && $3 = 's' then
+    [if $2 >= 1 && $3 = 's' then
       StringSpec $2
       else
         failwith (sprintf "invalid format specifier %%%d%c" $2 $3)

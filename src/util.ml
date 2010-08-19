@@ -57,3 +57,24 @@ let find_first (pred : 'a -> bool) (lst : 'a list) : 'a option =
   in
   try (loop lst; !ans)
   with Exit -> !ans
+
+(** [pad n c s] modifies [s] by prepending as many characters [c] as
+    needed to make length of [s] equal [n]. Returns [s] unmodified if
+    it is already longer than [n]. *)
+let prepad (n:int) (c:char) (s:string) : string =
+  let m = String.length s in
+  if m >= n then s
+  else String.make (n - m) c ^ s
+
+(** Split given filename into its base and extension. Like Standard
+    Library's Filename.chop_extension but also returns the
+    extension. Also this function assumes there are no directory
+    separators in [s], for example by using the output of
+    Filename.basename. *)
+let base_ext s : (string * string) =
+  let n = String.length s in
+  let rec search_dot i =
+    if i < 0 then (s,"")
+    else if s.[i] = '.' then (String.sub s 0 i, String.sub s i (n - i))
+    else search_dot (i - 1) in
+  search_dot (n - 1)

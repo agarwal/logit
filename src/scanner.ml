@@ -52,11 +52,12 @@ let parseAnySpecExceptString (spec:spec) (str:string) : parse_result =
         if n < 4 then
           NoParse "expected 4 digit year but reached end-of-input"
         else
+          let x4 = string_take 4 str in
           try
-            let x = int_of_string (string_take 4 str) in
+            let x = int_of_string x4 in
             Success (Data.Year x, string_drop 4 str)
           with
-              Failure _ -> NoParse (sprintf "%s: invalid year" str)
+              Failure _ -> NoParse (sprintf "%s: invalid year" x4)
       )
     | MonthSpec -> (
         let n = String.length str in
