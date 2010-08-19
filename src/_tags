@@ -1,1 +1,1 @@
-<**/*.{ml,mli,byte,native}> : pkg_unix
+<**/*.{ml,mli,byte,native}> : pkg_unix, pkg_getopt, pkg_extlib

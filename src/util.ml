@@ -57,5 +57,3 @@ let find_first (pred : 'a -> bool) (lst : 'a list) : 'a option =
   in
   try (loop lst; !ans)
   with Exit -> !ans
-    
-

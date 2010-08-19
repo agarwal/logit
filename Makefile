@@ -1,18 +1,20 @@
-all: doc
+INSTALL_DIR=$(HOME)/bin
 
-# for testing only, delete this
-main.native:
+all: logit.native
+
+install: logit.native
+	cp src/_build/logit.native $(INSTALL_DIR)/logit
+
+logit.native:
 	cd src; ocamlbuild $@
 
-doc: clean-doc
+devel-doc: clean-devel-doc
 	cd src; ocamlbuild logit.docdir/index.html; rm -f logit.docdir
 	mkdir -p doc/html/logit
 	cp -fR src/_build/logit.docdir/* doc/html/logit/
 
-clean:
-	cd src; ocamlbuild -clean
-
-clean-doc:
+clean-devel-doc:
 	rm -rf doc/html
 
-fresh: clean clean-doc
+clean: clean-devel-doc
+	cd src; ocamlbuild -clean
