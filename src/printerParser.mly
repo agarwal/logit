@@ -16,7 +16,7 @@ let char_to_num_spec (c:char) : num_spec =
 
 %token PLUS MINUS PERCENT EOF
 %token <char> CHAR
-%token <int> INTEGER
+%token <string> INTEGER
 
 %start make_printer
 %type <Printer.t> make_printer
@@ -34,7 +34,7 @@ elem:
 | CHAR {[CharSpec $1]}
 | PLUS {[CharSpec '+']}
 | MINUS {[CharSpec '-']}
-| INTEGER {List.map (fun c -> CharSpec c) (Util.explode (string_of_int $1))}
+| INTEGER {List.map (fun c -> CharSpec c) (Util.explode $1)}
 | PERCENT CHAR {
     [match $2 with
       | 's' -> StringSpec 1
@@ -43,14 +43,15 @@ elem:
     ]
   }
 | PERCENT INTEGER CHAR {
-    [if $2 >= 1 && $3 = 's' then
-      StringSpec $2
+    let i = int_of_string $2 in
+    [if i >= 1 && $3 = 's' then
+      StringSpec i
       else
-        failwith (sprintf "invalid format specifier %%%d%c" $2 $3)
+        failwith (sprintf "invalid format specifier %%%s%c" $2 $3)
     ]
   }
-| PERCENT PLUS INTEGER num_field {[NumSpec (Plus $3, $4)]}
-| PERCENT MINUS INTEGER num_field {[NumSpec (Minus $3, $4)]}
+| PERCENT PLUS INTEGER num_field {[NumSpec (Plus (int_of_string $3), $4)]}
+| PERCENT MINUS INTEGER num_field {[NumSpec (Minus (int_of_string $3), $4)]}
 ;
 
 num_field:
