@@ -17,4 +17,4 @@ clean-devel-doc:
 	rm -rf doc/html
 
 clean: clean-devel-doc
-	cd src; ocamlbuild -clean
+	cd src; ocamlbuild -clean; rm -f logit.native
