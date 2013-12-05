@@ -124,3 +124,5 @@ LICENSE file distributed with this software.
 CONTACT
 =======
 [Ashish Agarwal](http://ashishagarwal.org) (<agarwal1975@gmail.com>)  
+
+[![Build Status](https://travis-ci.org/agarwal/logit.png?branch=master)](https://travis-ci.org/agarwal/logit)
